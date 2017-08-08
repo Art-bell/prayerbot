@@ -181,6 +181,9 @@ background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, F
         .options_holder{
         	overflow-x: auto;
         }
+        .verse {
+            cursor: pointer;
+        }
         .horizontal_move{
         	min-width: 200px;
         	display: inline-flex;
@@ -218,6 +221,9 @@ background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, F
                 
                 objDiv.scrollTop = objDiv.scrollHeight;
         	})
+            $('body').on('click', '.verse', function(){
+                console.log($(this).text())
+            })
         	var objDiv = document.getElementById("content");
             var socket = io.connect();
             function sendtext() {

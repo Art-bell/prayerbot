@@ -26,32 +26,32 @@ var mongoose = require('mongoose');
 if (process.env.APP_CONFIG == undefined){
   //Database use for server
    mongoose.connect('mongodb://localhost/gtprayerbot');
-var PrayerSchema = new mongoose.Schema({
- category: String,
- value: String
-})
-var Prayer = mongoose.model('all_entries', PrayerSchema);
+  var PrayerSchema = new mongoose.Schema({
+   category: String,
+   value: String
+  })
+  var Prayer = mongoose.model('all_entries', PrayerSchema);
 
-var Random_prayerSchema = new mongoose.Schema({
- value: String
-})
-var Random_prayer = mongoose.model('random_prayers', Random_prayerSchema);
+  var Random_prayerSchema = new mongoose.Schema({
+   value: String
+  })
+  var Random_prayer = mongoose.model('random_prayers', Random_prayerSchema);
 }
 else {
   //Database use for localhost
   var config=JSON.parse(process.env.APP_CONFIG);
-var mongoPassword = 'Arthurmide98';
-mongoose.connect("mongodb://" + config.mongo.user + ":" + mongoPassword + "@" +config.mongo.hostString);
-var PrayerSchema = new mongoose.Schema({
- category: String,
- value: String
-})
-var Prayer = mongoose.model('all_entries', PrayerSchema);
+  var mongoPassword = 'Arthurmide98';
+  mongoose.connect("mongodb://" + config.mongo.user + ":" + mongoPassword + "@" +config.mongo.hostString);
+  var PrayerSchema = new mongoose.Schema({
+   category: String,
+   value: String
+  })
+  var Prayer = mongoose.model('all_entries', PrayerSchema);
 
-var Random_prayerSchema = new mongoose.Schema({
- value: String
-})
-var Random_prayer = mongoose.model('random_prayers', Random_prayerSchema);
+  var Random_prayerSchema = new mongoose.Schema({
+   value: String
+  })
+  var Random_prayer = mongoose.model('random_prayers', Random_prayerSchema);
 }
 
 // var config=JSON.parse(process.env.APP_CONFIG);
@@ -158,22 +158,22 @@ io.sockets.on('connection', function (socket) {
   function chooser(){
       var selector = getRandomInt(0,4);
       if (selector == 1){
-        socket.emit('server_response', {response: "Hello, may the Lord bless you today"});
+        socket.emit('server_response', {response: "May the Lord bless you today"});
         socket.emit('server_response', {response: "What would you like the Lord to help you with today? or which area in your life needs healing?", flag: true});
         socket.emit('button_options', {response: "<div class='options_holder'><div class='horizontal_move'><button class='option' >Relationship Issues</button><button class='option'>Financial Troubles</button><button class='option'>Loneliness</button><button class='option'>Worries</button><button class='option'>Depression</button><button class='option'>In Danger</button><button class='option'>Lack of Faith</button><button class='option'>In Need of Courage</button><button class='option'>Seeking Peace</button><button class='option'>Leaving For A Trip</button><button class='option'>Recovering From A Loss</button><button class='option'>Weakness</button></div></div>"});
       }
       else if (selector == 2){
-        socket.emit('server_response', {response: "Good day, the Lord is our strength"});
+        socket.emit('server_response', {response: "The Lord is our strength"});
         socket.emit('server_response', {response: "What would you like the Lord to help you with today? or which area in your life needs healing?", flag: true});
         socket.emit('button_options', {response: "<div class='options_holder'><div class='horizontal_move'><button class='option' >Relationship Issues</button><button class='option'>Financial Troubles</button><button class='option'>Loneliness</button><button class='option'>Worries</button><button class='option'>Depression</button><button class='option'>In Danger</button><button class='option'>Lack of Faith</button><button class='option'>In Need of Courage</button><button class='option'>Seeking Peace</button><button class='option'>Leaving For A Trip</button><button class='option'>Recovering From A Loss</button><button class='option'>Weakness</button></div></div>"});
       }
       else if (selector == 3){
-        socket.emit('server_response', {response: "Hello, may the blessings in your life continue to multiply"});
+        socket.emit('server_response', {response: "May the blessings in your life continue to multiply"});
         socket.emit('server_response', {response: "What would you like the Lord to help you with today? or which area in your life needs healing?", flag: true});
         socket.emit('button_options', {response: "<div class='options_holder'><div class='horizontal_move'><button class='option' >Relationship Issues</button><button class='option'>Financial Troubles</button><button class='option'>Loneliness</button><button class='option'>Worries</button><button class='option'>Depression</button><button class='option'>In Danger</button><button class='option'>Lack of Faith</button><button class='option'>In Need of Courage</button><button class='option'>Seeking Peace</button><button class='option'>Leaving For A Trip</button><button class='option'>Recovering From A Loss</button><button class='option'>Weakness</button></div></div>"});
       }
       else {
-        socket.emit('server_response', {response: "Good day, I pray the Lord continues to order your footsteps in the path of righteousness today"});
+        socket.emit('server_response', {response: "I pray the Lord continues to order your footsteps in the path of righteousness today"});
         socket.emit('server_response', {response: "What would you like the Lord to help you with today? or which area in your life needs healing?", flag: true});
         socket.emit('button_options', {response: "<div class='options_holder'><div class='horizontal_move'><button class='option' >Relationship Issues</button><button class='option'>Financial Troubles</button><button class='option'>Loneliness</button><button class='option'>Worries</button><button class='option'>Depression</button><button class='option'>In Danger</button><button class='option'>Lack of Faith</button><button class='option'>In Need of Courage</button><button class='option'>Seeking Peace</button><button class='option'>Leaving For A Trip</button><button class='option'>Recovering From A Loss</button><button class='option'>Weakness</button></div></div>"});
       }
