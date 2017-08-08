@@ -1,0 +1,313 @@
+<html>
+<head>
+<title></title>
+<link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+    <style type="text/css">
+        #holder {
+                width: 93vw;
+                height: 90vh;
+                border: 1px solid silver;
+
+                margin: auto;
+                position: relative;
+                border-radius: 20px;
+        }
+        h3 {
+            background: #36D1DC;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #5B86E5, #36D1DC);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+            -webkit-margin-before: 0em;
+            -webkit-margin-after: 0em;
+            font-family: 'Lato';
+            color: white;
+            height: 60px;
+            text-align: left;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding-top: 10px;
+            text-align: center;
+            font-size: 40px;
+        }
+        input {
+            position: absolute;
+            bottom: 0;
+            outline: none !important;
+            width: 85%;
+            left: 0;
+            height: 80px;
+            font-size: 40px;
+            border-bottom-left-radius: 20px;
+            padding: 10px;
+            border: none;
+            border-top: 1px solid silver;
+            transition: 0.2s;
+        }
+        input:focus{
+          box-shadow: 0 0 5px coral;
+          border: 1px solid coral;
+          border-bottom-left-radius: 20px;
+        }
+        #content {
+            overflow: auto;
+            width: 98.5%;
+            height: 79vh;
+            background: whitesmoke;
+            padding: 10px;
+        }
+        
+        .chatbot {
+            text-align: left;
+            margin: 10px;
+        }
+        .chatbotspan {
+                font-size: 40px;
+                background: white;
+                color: black;
+                padding: 10px;
+                border-radius: 5px;
+                font-family: 'Lato';
+                max-width: 55%;
+                text-align: left;
+                display: inline-block;
+                -webkit-margin-before: 0;
+                -webkit-margin-after: 0;
+        }
+        .user {
+            text-align: right;
+            margin: 10px;
+
+        }
+        ul {
+                padding: 0;
+                text-align: left;
+                -webkit-margin-before: 0;
+                -webkit-margin-after: 0;
+                margin: 10px;
+        }
+        li {
+                background: white;
+                display: inline-block;
+                color: black;
+                padding: 10px;
+                border-radius: 5px;
+                font-family: 'Lato';
+                max-width: 55%;
+                padding: 10px;
+        }
+        /*.user::after {
+                content: "";
+                position: absolute;
+                border-bottom: 10px solid transparent;
+                border-left: 28px solid #824F5D;
+                right: 0px;
+        }*/
+        .userspan {
+            font-size: 40px;
+            background: #469BB8;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: 'Lato';
+            max-width: 55%;
+            text-align: left;
+            display: inline-block;
+            -webkit-margin-before: 0;
+            -webkit-margin-after: 0;
+        }
+        #loading {
+            float: left;
+            transition: .2s;
+        }
+        .action {
+            color: white;
+            padding: 10px 20px 10px 20px;
+            border: none;
+            font-family: sans-serif;
+            border-radius: 20px;
+            width: 40%;
+            background: #824F5D;
+            margin-top: 10px;
+            font-size: 40px;
+            display: inline-block;
+            border-radius: 230px;
+            width: 300px;
+            height: 300px;
+            vertical-align: top;
+            overflow-y: hidden;
+            overflow-x: hidden;
+        }
+        #go {
+            background-color: cornflowerblue;
+            width: 14.9%;
+            right: 0;
+            border: none;
+            position: absolute;
+            bottom: 0;
+            color: white;
+            height: 80px;
+            border-bottom-right-radius: 20px;
+        }
+        .img_span {
+            margin-bottom: 5px;
+            display: inline-block;
+            width: 100%; text-align: center;
+            border-bottom: 1px solid maroon;
+        }
+        #option_content {
+            overflow-x: auto; 
+            width: 
+        }
+        .top_layer {
+            background: white;
+            height: 175px;
+            margin: auto; 
+            text-align: center;
+            width: 404px;
+            transform: translateY(-10px) translateX(-50px);
+        }
+        a:visited {
+            color: green;
+        }
+        .option { 
+        	padding: 15px 20px 15px 20px; border:none;
+        	border-radius: 25px; 
+        	font-size: 18px; 
+        	margin: 10px; 
+        	color: #fff;
+        	background: #469BB2;
+        	width: 220px;
+        }
+        .options_holder{
+        	overflow-x: auto;
+        }
+        .horizontal_move{
+        	min-width: 200px;
+        	display: inline-flex;
+        }
+        @media (min-width:1025px) { #content {
+            overflow: auto;
+            width: 98.5%;
+            height: 70vh;
+            background: whitesmoke;
+            padding: 10px;
+        } }
+        @media (min-width:1281px) { #content {
+            overflow: auto;
+            width: 98.5%;
+            height: 70vh;
+            background: whitesmoke;
+            padding: 10px;
+        } }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
+    <script type ="text/javascript">
+
+        $(document).ready(function (){
+        	var search_flag = false;
+        	$('body').on('click', '.option', function(){
+        		console.log($(this).text())
+        		search_flag =false
+            	// $('button').prop('disabled', 'disabled');
+                $('#content').append("<div class='user'><span class='userspan'>"+$(this).text()+"</span></div>");
+                
+                socket.emit("option", {reason: $(this).text()});
+                $('.options_holder').hide();
+                $('input').val("");
+                
+                objDiv.scrollTop = objDiv.scrollHeight;
+        	})
+        	var objDiv = document.getElementById("content");
+            var socket = io.connect();
+            function sendtext() {
+            	$('button').prop('disabled', 'disabled');
+                $('#content').append("<div class='user'><span class='userspan'>"+$('input').val()+"</span></div>");
+                
+                socket.emit("user_sent", {reason: $('input').val()});
+                $('input').val("");
+                
+                objDiv.scrollTop = objDiv.scrollHeight;
+            }
+
+        	
+  
+            $('input').keypress(function(e) {
+                if(e.which == 13) {
+                    if($('input').val() != "" && $('input').val() != " "){
+                        $('.options_holder').hide();
+                        sendtext()
+
+                        }
+                    }
+            });
+             $('#go').click(function (){
+                if($('input').val() != "" && $('input').val() != " "){
+                    $('.options_holder').hide();
+                    sendtext()
+                }
+            });
+
+            
+	    	$('.text_box').on('input',function(e){
+	    		if (search_flag == true){
+	    			var elementcount = 0;
+	    			var display_none_count = 0;
+	        		$('.option').each(function() {
+	        			elementcount++;
+	            		if($(this).text().toLowerCase().includes($('.text_box').val()) == false){
+	            			$(this).css('display', 'none');
+	            		}
+	            		else{
+	            			$(this).css('display', 'inline-block');
+	            			$('.nothing_found').remove()
+	            		}
+
+	            		if ($(this).css('display') == 'none'){
+	            			display_none_count++
+	            		}
+
+	            	})
+	            	if (display_none_count == elementcount && $(".horizontal_move").find(".nothing_found").length == 0){
+	            			$('.horizontal_move').append("<p class='nothing_found'>Sorry, no result has been found</p>")
+	            	}
+	        	}
+	    	})
+	            	
+            
+                socket.on('server_response', function (data){
+                    $('button').prop('disabled', false);
+                    $('#content').append("<div class='chatbot'><p class='chatbotspan'>"+data.response+"</p></div>");
+                    $('#loading').remove();
+                    objDiv.scrollTop = objDiv.scrollHeight; 
+                });
+                socket.on('button_options', function(data){
+                	search_flag = true;
+                	$('#content').append(data.response)
+                })
+        })
+
+    </script>
+</head>
+<body>
+    <div id="holder">
+
+        <h3><span style="vertical-align: top; margin-left: 10px;">PrayerBot</span></h3>
+        <div id="content">
+            <div class="chatbot"> <p class="chatbotspan">Good day </p></div>
+            <!-- <div class="chatbot"> <p class="chatbotspan">Click one of these to find out something new  &#128521;</p></div> -->
+           
+        </div>
+        <input class="text_box" placeholder="Send a message" maxlength="80" type="text">
+        <button id="go">
+            <svg fill="white" version="1.1" xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 512 512">
+            <title></title>
+            <g id="icomoon-ignore">
+            </g>
+            <path d="M288 124.186v-124.186l192 192-192 192v-126.912c-223.375-5.241-213.794 151.896-156.93 254.912-140.356-151.707-110.55-394.785 156.93-387.814z"></path>
+            </svg>
+        </button>
+    </div>
+    <!-- web page goes here -->
+</body>
+</html><br>

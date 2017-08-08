@@ -1,0 +1,103 @@
+<html>
+	<head>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		<link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+		<style>
+			body{text-align: center; padding: 30px; font-family: lato}
+			img {width: 100px;}
+			input{height: 50px; width: 700px; line-height: 50px; font-size: 20px; text-align: center; font-family: lato; margin: 10}
+			.table_input{height: 50px; width: 700px; line-height: 50px; font-size: 20px; text-align: center; border:none; margin: none;}
+			button{border: none; background: firebrick; color: white; font-size: 20px; padding: 10px 25px 10px 25px;}
+			td, th {text-align: center; padding: 10px;}
+			td {border: 2px solid silver}
+			textarea {font-size: 15px; border: none}
+			table {width: 100%;}
+			#yes {background-color: #40C40C; color: white; font-family: lato; padding: 10px 20px 10px 20px; margin: 5px}
+			#no {background-color: #C4340C; color: white; font-family: lato; padding: 10px 20px 10px 20px; margin: 5px;}
+			#popup {border: 1px solid silver; padding: 40px 20px ; width: 60%; display: none; background: white; position: fixed; z-index: 2; left: 50%; margin-left: -30%; margin-top: 250px; transition: .1s;}
+			#dimmable_content{transition: .1s;}
+		</style>
+	</head>
+	<body>
+		<div id="popup">
+			<p>Are you sure you want to delete this<span hidden id="clicked_value"></span> prayer?</p>
+			<button id="yes">YES</button><button id="no">NO</button>
+		</div>
+		<div id="dimmable_content">
+			<br><br><br><br><br><br><br><br><br><br>
+			<p id="status"></p>
+			<form>
+				<input id="value" required placeholder="Please enter in the value" name="value" ><br><br>
+			</form>
+			<button>Submit</button>
+			<br><br><br><br>
+			<h2>Instructions (Important!)</h2>
+			<p> No need to go to WIt for this</p>
+			<p>The value may also contain HTML</p>
+			<p>For example, to bolden parts of a text, use the 'b' tags in HTML, (<b>Example</b>).</p>
+			<p><span style="color: red">NOTE!!<span>: No categories can bear the same name</p>
+			<h2>Edit / Delete prayers</h2>
+			  <table>
+			  	<tr>
+				    <th>S/N</th>
+				    <th>Prayer</th>
+				  </tr>
+			     <% var count = 1; for (var x in prayers) { %>
+			     <% if (prayers[x].value != undefined){ %>
+			     <p></p>
+			      <td><%= count %></td><td hidden class="categories"><input class="old_value" name="old_value" hidden value="<%= prayers[x].value %>"><td class="textareas"><textarea class="new_value" name="new_value" cols=60 rows=7> <%=prayers[x].value %></textarea></td><td class="delete" style="color:red; cursor: pointer; font-weight:800">X</td>
+			     </tr>
+			     <%count +=1 } %>
+			     <% } %>
+			  </table>
+		</div>
+		
+		<script>
+		$('.table_input').change(function(){
+			$(this).parent().css("border", "2px solid mediumseagreen")
+		})
+		$('textarea').change(function(){
+			$(this).parent().css("border", "2px solid mediumseagreen")
+		})
+		$('textarea').focusout(function(){
+		    $.post("/update_random_prayer",
+		    {
+		        new_value: $(this).val(),
+		        old_value: $(this).parent().siblings('.categories').find('.old_value').val()
+		    },
+		    function(data, status){
+		    });
+		})
+		$('.delete').click(function(){
+			$('#dimmable_content').css("filter", "blur(8px)")
+			$('#popup').css('display', 'inline-block')
+			$('#clicked_value').text($(this).siblings('.categories').find('.old_value').val())
+		})
+		$('#no').click(function(){
+			$('#dimmable_content').css("filter", "blur(0px)")
+			$('#popup').css('display', 'none')
+		})
+		$('#yes').click(function(){
+			$.post("/remove_random_prayer",
+		    {
+		        old_value: $('#clicked_value').text()
+		    },
+		    function(data, status){
+		    	location.reload()
+		    });
+		})
+		$("button").click(function(){
+			if($('#category').val() != "" && $('#value').val() != ""){
+			    $.post("/make_random_prayer",
+			    {
+			        value: $('#value').val()
+			    },
+			    function(data, status){
+			    	location.reload()
+			        // alert("Status: " + status);
+			    });
+			}
+		});
+		</script>
+	</body>
+</html>
