@@ -23,16 +23,9 @@ var path = require("path");
 var express = require("express");
 var mongoose = require('mongoose');
 
-// var config=JSON.parse(process.env.APP_CONFIG);
-// var mongoPassword = 'Arthurmide98';
-// mongoose.connect("mongodb://" + config.mongo.user + ":" + mongoPassword + "@" +config.mongo.hostString);
-// var EntrySchema = new mongoose.Schema({
-//  category: String,
-//  value: String
-// })
-// var Entry = mongoose.model('all_entries', EntrySchema);
-
-mongoose.connect('mongodb://localhost/gtprayerbot');
+if (process.env.APP_CONFIG == undefined){
+  //Database use for server
+   mongoose.connect('mongodb://localhost/gtprayerbot');
 var PrayerSchema = new mongoose.Schema({
  category: String,
  value: String
@@ -43,6 +36,34 @@ var Random_prayerSchema = new mongoose.Schema({
  value: String
 })
 var Random_prayer = mongoose.model('random_prayers', Random_prayerSchema);
+}
+else {
+  //Database use for localhost
+  var config=JSON.parse(process.env.APP_CONFIG);
+var mongoPassword = 'Arthurmide98';
+mongoose.connect("mongodb://" + config.mongo.user + ":" + mongoPassword + "@" +config.mongo.hostString);
+var PrayerSchema = new mongoose.Schema({
+ category: String,
+ value: String
+})
+var Prayer = mongoose.model('all_entries', PrayerSchema);
+
+var Random_prayerSchema = new mongoose.Schema({
+ value: String
+})
+var Random_prayer = mongoose.model('random_prayers', Random_prayerSchema);
+}
+
+// var config=JSON.parse(process.env.APP_CONFIG);
+// var mongoPassword = 'Arthurmide98';
+// mongoose.connect("mongodb://" + config.mongo.user + ":" + mongoPassword + "@" +config.mongo.hostString);
+// var EntrySchema = new mongoose.Schema({
+//  category: String,
+//  value: String
+// })
+// var Entry = mongoose.model('all_entries', EntrySchema);
+
+
 
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest; 
 var app = express();
