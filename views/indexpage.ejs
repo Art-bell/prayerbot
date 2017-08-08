@@ -183,6 +183,7 @@ background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, F
         }
         .verse {
             cursor: pointer;
+            color: #176D8A;
         }
         .horizontal_move{
         	min-width: 200px;
@@ -222,6 +223,7 @@ background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, F
                 objDiv.scrollTop = objDiv.scrollHeight;
         	})
             $('body').on('click', '.verse', function(){
+                socket.emit("get_verser", {reason: $(this).text()});
                 console.log($(this).text())
             })
         	var objDiv = document.getElementById("content");

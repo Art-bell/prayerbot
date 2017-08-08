@@ -233,7 +233,11 @@ io.sockets.on('connection', function (socket) {
           })
         }
       })
-    
+  })
+
+  socket.on("get_verse", function(dataA){
+    console.log(dataA.reason.split(" ").join("+"))
+    // $.getJSON('http://ipinfo.io', function(dataA){
   })
 })
 
