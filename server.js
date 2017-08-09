@@ -237,7 +237,7 @@ io.sockets.on('connection', function (socket) {
           //Detailed explanation: The database used in the project is MongoDB, which is ideal for NodeJS apps;
           //The collection used below is the 'prayer' collection. It has two columns: category & value.
           //The category column is the column which must match the category that you have specified in Wit.ai
-          //or whatever translation api you have used. It is also recommended to use underscores in place of spaces.
+          //or whatever translation api you have used.
           //The value column will be whatever you want the bot to send back to the user. You may notice that
           //in this projects database, some value columns start with '<span>' or '<img>'. This is because
           //the value contains an image that will be sent to the user as well as text. You may also notice words like '&#x61736'
