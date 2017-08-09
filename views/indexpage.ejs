@@ -1,7 +1,7 @@
 <html>
 <head>
 <title></title>
-<link href="https://fonts.googleapis.com/css?family=Lato:300" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
     <style type="text/css">
         #holder {
                 width: 93vw;
@@ -20,6 +20,7 @@ background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, F
             -webkit-margin-before: 0em;
             -webkit-margin-after: 0em;
             font-family: 'Lato';
+            font-weight: 300;
             color: white;
             height: 60px;
             text-align: left;
@@ -67,6 +68,7 @@ background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, F
                 padding: 10px;
                 border-radius: 5px;
                 font-family: 'Lato';
+                font-weight: 300;
                 max-width: 55%;
                 text-align: left;
                 display: inline-block;
@@ -92,6 +94,7 @@ background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, F
                 padding: 10px;
                 border-radius: 5px;
                 font-family: 'Lato';
+                font-weight: 300;
                 max-width: 55%;
                 padding: 10px;
         }
@@ -109,15 +112,12 @@ background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, F
             padding: 10px;
             border-radius: 5px;
             font-family: 'Lato';
+            font-weight: 300;
             max-width: 55%;
             text-align: left;
             display: inline-block;
             -webkit-margin-before: 0;
             -webkit-margin-after: 0;
-        }
-        #loading {
-            float: left;
-            transition: .2s;
         }
         .action {
             color: white;
@@ -189,6 +189,35 @@ background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, F
         	min-width: 200px;
         	display: inline-flex;
         }
+        #popup_modal {
+            border: 1px solid silver;
+            height: 400px; overflow-x: scroll;  
+            padding: 40px 20px ; 
+            width: 60%; 
+            display: none; 
+            background: white; 
+            position: fixed; 
+            z-index: 2; 
+            left: 50%; 
+            margin-left: -30%; 
+            margin-top: 150px;
+            font-family: Verdana;
+        }
+        #exit {
+            float: right;
+            cursor: pointer;
+        }
+        #header_holder {
+
+        }
+        #popup_text {
+            text-align: center;
+            font-family: 'Lato';
+            font-weight: 400
+        }
+        #popup_header{
+            display: inline-block;
+        }
         @media (min-width:1025px) { #content {
             overflow: auto;
             width: 98.5%;
@@ -207,11 +236,26 @@ background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, F
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
     <script type ="text/javascript">
+        $(document).mouseup(function(e) 
+        {
+            var container = $("#popup_modal");
+
+            // if the target of the click isn't the container nor a descendant of the container
+            if (!container.is(e.target) && container.has(e.target).length === 0) 
+            {
+                container.hide();
+            }
+        });
 
         $(document).ready(function (){
+            $('#exit').click(function(){
+                $('#popup_modal').fadeOut(300, function(){
+                    $('#popup_text').text("")
+                });
+
+            })
         	var search_flag = false;
         	$('body').on('click', '.option', function(){
-        		console.log($(this).text())
         		search_flag =false
             	// $('button').prop('disabled', 'disabled');
                 $('#content').append("<div class='user'><span class='userspan'>"+$(this).text()+"</span></div>");
@@ -223,8 +267,10 @@ background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, F
                 objDiv.scrollTop = objDiv.scrollHeight;
         	})
             $('body').on('click', '.verse', function(){
-                socket.emit("get_verser", {reason: $(this).text()});
-                console.log($(this).text())
+                $('#popup_modal').fadeIn(300);
+                $('#popup_header').text($(this).text().split(":")[0])
+                socket.emit("get_verse", {reason: $(this).text()});
+                $('#popup_text').append("<img id='loading' src='https://www.mts.am/ResourcePackages/MTSArmenia/assets/images/loading.gif' >")
             })
         	var objDiv = document.getElementById("content");
             var socket = io.connect();
@@ -286,12 +332,16 @@ background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, F
                 socket.on('server_response', function (data){
                     $('button').prop('disabled', false);
                     $('#content').append("<div class='chatbot'><p class='chatbotspan'>"+data.response+"</p></div>");
-                    $('#loading').remove();
+                    // $('#loading').remove();
                     objDiv.scrollTop = objDiv.scrollHeight; 
                 });
                 socket.on('button_options', function(data){
                 	search_flag = true;
                 	$('#content').append(data.response)
+                })
+                socket.on('returned_verses', function(data){
+                    $('#popup_text').text("")
+                    $('#popup_text').append(data.response)
                 })
         })
 
@@ -302,7 +352,16 @@ background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, F
 
         <h3><span style="vertical-align: top; margin-left: 10px;">PrayerBot</span></h3>
         <div id="content">
-            <div class="chatbot"> <p class="chatbotspan">Good day </p></div>
+            <div id="popup_modal">
+                <div id='header_holder'>
+                    <h2 id="popup_header"></h2>
+                    <span id="exit">X</span>
+                </div>
+                <p id="popup_text"></p>
+            </div>
+            <div class="chatbot"> 
+                <p class="chatbotspan">Good day </p>
+            </div>
             <!-- <div class="chatbot"> <p class="chatbotspan">Click one of these to find out something new  &#128521;</p></div> -->
            
         </div>

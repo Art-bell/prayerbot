@@ -47,7 +47,7 @@
 				    <th>Prayer</th>
 				  </tr>
 			     <% var count = 1; for (var x in prayers) { %>
-			     <% console.log(prayers); if (prayers[x].value != undefined){ %>
+			     <% if (prayers[x].value != undefined){ %>
 			     <p></p>
 			      <td><%= count %></td><td class="categories"><input class="old_category" name="old_category" hidden value="<%= prayers[x].category %>"><input class="table_input new_category" name="new_category" value="<%= prayers[x].category %>"></td><td class="textareas"><textarea class="new_value" name="new_value" cols=60 rows=7> <%=prayers[x].value %></textarea></td><td class="delete" style="color:red; cursor: pointer; font-weight:800">X</td>
 			     </tr>

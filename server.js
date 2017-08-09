@@ -37,7 +37,7 @@ if (process.env.APP_CONFIG == undefined){
   })
   var Random_prayer = mongoose.model('random_prayers', Random_prayerSchema);
 }
-else {
+else { 
   //Database use for localhost
   var config=JSON.parse(process.env.APP_CONFIG);
   var mongoPassword = 'Arthurmide98';
@@ -178,6 +178,7 @@ io.sockets.on('connection', function (socket) {
         socket.emit('button_options', {response: "<div class='options_holder'><div class='horizontal_move'><button class='option' >Relationship Issues</button><button class='option'>Financial Troubles</button><button class='option'>Loneliness</button><button class='option'>Worries</button><button class='option'>Depression</button><button class='option'>In Danger</button><button class='option'>Lack of Faith</button><button class='option'>In Need of Courage</button><button class='option'>Seeking Peace</button><button class='option'>Leaving For A Trip</button><button class='option'>Recovering From A Loss</button><button class='option'>Weakness</button></div></div>"});
       }
   }
+  chooser()
 
   console.log(socket.id);
   //This is used to capture any text that the user sends from the input box.
@@ -186,6 +187,25 @@ io.sockets.on('connection', function (socket) {
       .then((data) => {
         if(Object.keys(data.entities) == "greetings"){
           chooser()
+        }
+        else if(Object.keys(data.entities) == "prayer_category"){
+          var ind
+          //Detailed explanation: The database used in the project is MongoDB, which is ideal for NodeJS apps;
+          //The collection used below is the 'prayer' collection. It has two columns: category & value.
+          //The category column is the column which must match the category that you have specified in Wit.ai
+          //or whatever translation api you have used. It is also recommended to use underscores in place of spaces.
+          //The value column will be whatever you want the bot to send back to the user. You may notice that
+          //in this projects database, some value columns start with '<span>' or '<img>'. This is because
+          //the value contains an image that will be sent to the user as well as text. You may also notice words like '&#x61736'
+          //These words are unicode for Emojis and you can google more info on them.
+          Prayer.find({},function (err, prayer){ //This function will get every single prayer from our database
+              for (ind in prayer){ //This for loop will loop through each funciton
+                if (prayer[ind].category == data.entities.prayer_category[0].value.toLowerCase()){  //This if statement will then check to see if the category is the same as the one which Wit.ai has returned back after analyzing the users text
+                  socket.emit('server_response', {response: prayer[ind].value}); //It will then send the value you have specified for that category back to the user through the Bot.
+                }
+              }
+              // res.render('user', {user: user});
+          })
         }
         else if (Object.keys(data.entities) == "intent"){
           var count = 0;
@@ -210,7 +230,6 @@ io.sockets.on('connection', function (socket) {
     
   })
   socket.on("option", function (dataA){
-    console.log(dataA.reason)
     client.message(dataA.reason, {})
       .then((data) => {
         if(Object.keys(data.entities) == "prayer_category"){
@@ -234,10 +253,17 @@ io.sockets.on('connection', function (socket) {
         }
       })
   })
-
-  socket.on("get_verse", function(dataA){
-    console.log(dataA.reason.split(" ").join("+"))
-    // $.getJSON('http://ipinfo.io', function(dataA){
+  socket.on("get_verse", function(dataA){ 
+    var return_text = ""
+    $.getJSON('https://bible-api.com/'+dataA.reason.split(":")[0], function(dataB){
+        for (i = 0; i < dataB.verses.length; i++){
+        return_text += "<b style='font-size: 25px'>Verse:" + dataB.verses[i].verse + "</b>"
+        return_text += "<br>"
+        return_text += dataB.verses[i].text + "<br><br>"
+      }
+      socket.emit('returned_verses', {response: return_text})
+    })
+    
   })
 })
 
