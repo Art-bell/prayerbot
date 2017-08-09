@@ -255,7 +255,7 @@ io.sockets.on('connection', function (socket) {
   })
   socket.on("get_verse", function(dataA){ 
     var return_text = ""
-    $.getJSON('https://bible-api.com/'+dataA.reason.split(":")[0], function(dataB){
+    $.getJSON('https://bible-api.com/'+dataA.reason.split(":")[0]+"?translation=kjv", function(dataB){
         for (i = 0; i < dataB.verses.length; i++){
         return_text += "<b style='font-size: 25px'>Verse:" + dataB.verses[i].verse + "</b>"
         return_text += "<br>"
