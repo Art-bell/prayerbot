@@ -19,6 +19,7 @@ require("jsdom-no-contextify").env("", function(err, window) { //JQuery module u
 });
 
 var path = require("path");
+var session = require('express-session');
 // require express and create the express app
 var express = require("express");
 var mongoose = require('mongoose');
@@ -54,15 +55,6 @@ else {
   var Random_prayer = mongoose.model('random_prayers', Random_prayerSchema);
 }
 
-// var config=JSON.parse(process.env.APP_CONFIG);
-// var mongoPassword = 'Arthurmide98';
-// mongoose.connect("mongodb://" + config.mongo.user + ":" + mongoPassword + "@" +config.mongo.hostString);
-// var EntrySchema = new mongoose.Schema({
-//  category: String,
-//  value: String
-// })
-// var Entry = mongoose.model('all_entries', EntrySchema);
-
 
 
 var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest; 
@@ -71,6 +63,7 @@ var app = express();
 var bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(session({secret: 'prayerbotpassword'}));  // string for encryption
 // static content
 app.use(express.static(path.join(__dirname, "./static")));
 // set the views folder and set up ejs
@@ -79,9 +72,11 @@ app.set('view engine', 'ejs');
 app.use( express.static( "public" ) );
 // root route
 app.get('/', function(req, res) {
+  req.session.test = "chicken soup";
  res.render('indexpage');
 })
 app.get('/add_to_bot', function(req, res) {
+  console.log(req.session.test);
   Prayer.find({}, function (err, prayers){
         // loads a view called 'user.ejs' and passed the user object to the view!
         res.render('add_to_bot', {prayers, prayers});
@@ -158,7 +153,7 @@ io.sockets.on('connection', function (socket) {
   function chooser(){
       var selector = getRandomInt(0,4);
       if (selector == 1){
-        socket.emit('server_response', {response: "May the Lord bless you today"});
+        socket.emit('server_response', {response: "May the Lord bless you"});
         socket.emit('server_response', {response: "What would you like the Lord to help you with today? or which area in your life needs healing?", flag: true});
         socket.emit('button_options', {response: "<div class='options_holder'><div class='horizontal_move'><button class='option' >Relationship Issues</button><button class='option'>Financial Troubles</button><button class='option'>Loneliness</button><button class='option'>Worries</button><button class='option'>Depression</button><button class='option'>In Danger</button><button class='option'>Lack of Faith</button><button class='option'>In Need of Courage</button><button class='option'>Seeking Peace</button><button class='option'>Leaving For A Trip</button><button class='option'>Recovering From A Loss</button><button class='option'>Weakness</button></div></div>"});
       }
@@ -178,7 +173,9 @@ io.sockets.on('connection', function (socket) {
         socket.emit('button_options', {response: "<div class='options_holder'><div class='horizontal_move'><button class='option' >Relationship Issues</button><button class='option'>Financial Troubles</button><button class='option'>Loneliness</button><button class='option'>Worries</button><button class='option'>Depression</button><button class='option'>In Danger</button><button class='option'>Lack of Faith</button><button class='option'>In Need of Courage</button><button class='option'>Seeking Peace</button><button class='option'>Leaving For A Trip</button><button class='option'>Recovering From A Loss</button><button class='option'>Weakness</button></div></div>"});
       }
   }
-  chooser()
+  socket.on("on_load", function(dataA){
+    chooser()
+  })
 
   console.log(socket.id);
   //This is used to capture any text that the user sends from the input box.
@@ -206,6 +203,12 @@ io.sockets.on('connection', function (socket) {
               }
               // res.render('user', {user: user});
           })
+        }
+        else if ("gratification"  in data.entities){
+          socket.emit('server_response', {response: "It is well"});
+        }
+        else if ("assistance" in data.entities){
+          chooser()
         }
         else if (Object.keys(data.entities) == "intent"){
           var count = 0;

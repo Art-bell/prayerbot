@@ -236,6 +236,8 @@ background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, F
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
     <script type ="text/javascript">
+
+        //the block below is used to hide the 'pop-up verse' div once the user clicks out of the div
         $(document).mouseup(function(e) 
         {
             var container = $("#popup_modal");
@@ -248,32 +250,40 @@ background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, F
         });
 
         $(document).ready(function (){
+            var socket = io.connect(); //Socket connection
+
+            //Once the page is loaded, emit 'on_load'. This causes the server to send the 'problem' options to the user at the beginning
+            socket.emit("on_load", {reason: ""});
             $('#exit').click(function(){
                 $('#popup_modal').fadeOut(300, function(){
                     $('#popup_text').text("")
                 });
 
             })
-        	var search_flag = false;
+        	var search_flag = false;   //This is the search flag. the search flag is used to indicate when the user will use the text input box to search through given options. It is set to true when the server send 'problem' options to the user.
+
+            //Once an option is clicked, this block will execute.
         	$('body').on('click', '.option', function(){
-        		search_flag =false
+        		search_flag =false    //The search flag will be reset to false since the option has already been clicked
             	// $('button').prop('disabled', 'disabled');
-                $('#content').append("<div class='user'><span class='userspan'>"+$(this).text()+"</span></div>");
+                $('#content').append("<div class='user'><span class='userspan'>"+$(this).text()+"</span></div>");//The selected option will be sent into the chat as if it were typed by the user.
                 
-                socket.emit("option", {reason: $(this).text()});
-                $('.options_holder').hide();
-                $('input').val("");
-                
+                socket.emit("option", {reason: $(this).text()}); //send the option to the server
+                $('.options_holder').hide(); //hold the entire options list
+                $('input').val(""); //clear the text input box
                 objDiv.scrollTop = objDiv.scrollHeight;
         	})
-            $('body').on('click', '.verse', function(){
-                $('#popup_modal').fadeIn(300);
-                $('#popup_header').text($(this).text().split(":")[0])
-                socket.emit("get_verse", {reason: $(this).text()});
+            //The block below will execute when the bible verse is clicked
+            $('body').on('click', '.verse', function(){ 
+                $('#popup_modal').fadeIn(300);//Display the pop up modal where the entire bible chapter will be displayed
+                $('#popup_header').text($(this).text().split(":")[0])   //Make the header of this pop up equal to the chapter that was clicked
+                socket.emit("get_verse", {reason: $(this).text()}); //Send a request to the server to get the needed bible chapter
                 $('#popup_text').append("<img id='loading' src='https://www.mts.am/ResourcePackages/MTSArmenia/assets/images/loading.gif' >")
+                //Append the loading image so the user knows to wait
             })
-        	var objDiv = document.getElementById("content");
-            var socket = io.connect();
+        	var objDiv = document.getElementById("content");   //Get the entire chat message box
+            
+            //The function below is used to send the users message to the server
             function sendtext() {
             	$('button').prop('disabled', 'disabled');
                 $('#content').append("<div class='user'><span class='userspan'>"+$('input').val()+"</span></div>");
@@ -285,7 +295,7 @@ background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, F
             }
 
         	
-  
+            //When the 'enter' button is pressed, send the text to the server
             $('input').keypress(function(e) {
                 if(e.which == 13) {
                     if($('input').val() != "" && $('input').val() != " "){
@@ -295,6 +305,7 @@ background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, F
                         }
                     }
             });
+            //If the 'go/send' button is pressed, send text to the server
              $('#go').click(function (){
                 if($('input').val() != "" && $('input').val() != " "){
                     $('.options_holder').hide();
@@ -302,9 +313,9 @@ background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, F
                 }
             });
 
-            
+            //The function here captures whenever the user types anything into the text input boz
 	    	$('.text_box').on('input',function(e){
-	    		if (search_flag == true){
+	    		if (search_flag == true){//If the search flag is active while the user is typing, make the text input act as a search for the available options.
 	    			var elementcount = 0;
 	    			var display_none_count = 0;
 	        		$('.option').each(function() {
@@ -322,6 +333,7 @@ background: linear-gradient(to right, #5B86E5, #36D1DC); /* W3C, IE 10+/ Edge, F
 	            		}
 
 	            	})
+                    //If the users search doesnt yield any results, then a 'sorry' message is displayed instead
 	            	if (display_none_count == elementcount && $(".horizontal_move").find(".nothing_found").length == 0){
 	            			$('.horizontal_move').append("<p class='nothing_found'>Sorry, no result has been found</p>")
 	            	}
